@@ -10,24 +10,29 @@ module Praxis
         @routes = []
 
         @version_prefix = ""
+        @path_prefix = ""
         if resource_definition.version_options
           version_using = Array(resource_definition.version_options[:using])
-          if version_using.include?(:path)  
+          if version_using.include?(:path)
             @version_prefix = "#{Praxis::Request::path_version_prefix}#{resource_definition.version}"
           end
         end
-        prefix( "/" + resource_definition.name.split("::").last.underscore )
-        
+        @default_path_prefix = "/" + resource_definition.name.split("::").last.underscore
+
         if resource_definition.routing_config
-          instance_eval(&resource_definition.routing_config)
+          resource_definition.routing_config.collect { |routing_config| instance_eval(&routing_config) }.join
         end
 
         instance_eval(&block)
       end
 
       def prefix(prefix=nil)
-        @path_prefix = prefix if prefix
-        @version_prefix + @path_prefix 
+        @path_prefix += prefix if prefix
+        if !@path_prefix.empty?
+          @version_prefix + @path_prefix
+        else
+          @version_prefix + @default_path_prefix
+        end
       end
 
       def options(path, opts={}) add_route 'OPTIONS', path, opts end

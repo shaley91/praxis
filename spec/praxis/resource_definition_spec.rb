@@ -9,7 +9,7 @@ describe Praxis::ResourceDefinition do
   its(:version) { should eq('1.0') }
   its(:version_options) { should eq({using: [:header,:params]}) }
 
-  its(:routing_config) { should be_kind_of(Proc) }
+  its(:routing_config) { should be_kind_of(Array) }
 
   its(:actions) { should have(2).items }
   its(:metadata) { should_not have_key(:doc_visibility) }
@@ -100,7 +100,7 @@ describe Praxis::ResourceDefinition do
 
   context 'with nodoc! called' do
     before do
-      resource_definition.nodoc!      
+      resource_definition.nodoc!
     end
 
     it 'has the :doc_visibility option set' do

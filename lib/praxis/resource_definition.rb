@@ -10,6 +10,7 @@ module Praxis
       @version = 'n/a'.freeze
       @actions = Hash.new
       @responses = Hash.new
+      @routing_config = []
       @action_defaults = []
       @version_options = {}
       @metadata = {}
@@ -21,7 +22,7 @@ module Praxis
       attr_reader :routing_config
       attr_reader :responses
       attr_reader :version_options
-  
+
       # opaque hash of user-defined medata, used to decorate the definition,
       # and also available in the generated JSON documents
       attr_reader :metadata
@@ -30,7 +31,7 @@ module Praxis
 
       # FIXME: this is inconsistent with the rest of the magic DSL convention.
       def routing(&block)
-        @routing_config = block
+        @routing_config << block
       end
 
       def media_type(media_type=nil)
@@ -53,13 +54,13 @@ module Praxis
 
         @action_defaults << block
       end
-  
+
       def params(type=Attributor::Struct, **opts, &block)
         warn 'DEPRECATION: ResourceDefinition.params is deprecated. Use it in action_defaults instead.'
         action_defaults do
           params type, **opts, &block
         end
-      end      
+      end
 
       def payload(type=Attributor::Struct, **opts, &block)
         warn 'DEPRECATION: ResourceDefinition.payload is deprecated. Use action_defaults instead.'
@@ -74,7 +75,7 @@ module Praxis
           headers **opts, &block
         end
       end
-      
+
       def response(name, **args)
         warn 'DEPRECATION: ResourceDefinition.response is deprecated. Use action_defaults instead.'
         action_defaults do
@@ -92,7 +93,7 @@ module Praxis
         @description
       end
 
-    
+
 
       def describe
         {}.tap do |hash|
